@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MINI GAME — VOID PROJECT</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #fff;
+    min-height: 100vh;
+    background: #0a0a1a;
+    overflow-x: hidden;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body::before {
+    content: "";
+    position: fixed; inset: -50%;
+    background:
+      radial-gradient(circle at 20% 20%, #6a5cff 0%, transparent 40%),
+      radial-gradient(circle at 80% 80%, #ff5cc8 0%, transparent 40%),
+      #0a0a1a;
+    z-index: -1;
+    animation: bgMove 12s ease-in-out infinite alternate;
+  }
+  @keyframes bgMove {
+    0% { transform: translate(0,0); }
+    100% { transform: translate(-3%,-3%); }
+  }
+
+  .wrap {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+    min-height: 100vh;
+  }
+
+  .back {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.10);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    text-decoration: none;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    margin-bottom: 16px;
+    transition: transform 0.2s, background 0.2s;
+  }
+  .back:active { transform: scale(0.95); }
+  .back:hover { background: rgba(255,255,255,0.18); }
+
+  .title {
+    text-align: center;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    margin-bottom: 4px;
+    background: linear-gradient(90deg, #fff, #b8b0ff, #ff9ce0, #fff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 4s linear infinite;
+  }
+  @keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.4);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .stat {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .stat-label {
+    font-size: 8px;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-size: 16px;
+    font-weight: 800;
+    color: #fff;
+  }
+  .stat.gold .stat-value { color: #ffd700; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+  .stat.level .stat-value { color: #ff9ce0; text-shadow: 0 0 10px rgba(255,156,224,0.5); }
+  .stat.hp .stat-value { color: #ff5c5c; text-shadow: 0 0 10px rgba(255,92,92,0.5); }
+
+  .enemy-area {
+    background: rgba(255,255,255,0.06);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .enemy-area::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, rgba(255,92,200,0.15), transparent 60%);
+    pointer-events: none;
+  }
+
+  .enemy-name {
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    color: #ff9ce0;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    position: relative;
+  }
+
+  .enemy-sprite {
+    width: 100px;
+    height: 100px;
+    margin: 10px auto;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: enemyIdle 2s ease-in-out infinite;
+    transition: transform 0.1s;
+  }
+  .enemy-sprite svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 20px rgba(255,92,200,0.6));
+    transition: filter 0.2s;
+  }
+  @keyframes enemyIdle {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-8px) scale(1.05); }
+  }
+  .enemy-sprite.hit {
+    animation: enemyHit 0.3s ease;
+  }
+  @keyframes enemyHit {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.85) rotate(-5deg); }
+    100% { transform: scale(1); }
+  }
+  .enemy-sprite.hit svg {
+    filter: drop-shadow(0 0 40px rgba(255,255,255,1)) brightness(2);
+  }
+
+  .enemy-hp-bar {
+    width: 100%;
+    height: 14px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 10px;
+    overflow: hidden;
+    border: 1px solid rgba(255,255,255,0.15);
+    margin-top: 8px;
+    position: relative;
+  }
+  .enemy-hp-fill {
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(90deg, #ff5c5c, #ff9c5c);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+    box-shadow: 0 0 12px rgba(255,92,92,0.6);
+  }
+  .enemy-hp-text {
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    margin-top: 4px;
+    letter-spacing: 1px;
+  }
+
+  .attack-btn {
+    width: 100%;
+    padding: 18px;
+    border-radius: 18px;
+    border: 1px solid rgba(255,255,255,0.3);
+    background: linear-gradient(135deg, #ff5c5c 0%, #ff9c5c 100%);
+    background-size: 200% 200%;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 10px 30px rgba(255,92,92,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
+    animation: atkFlow 3s ease infinite;
+    transition: transform 0.1s, box-shadow 0.2s;
+    margin-bottom: 14px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+  @keyframes atkFlow {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .attack-btn:active {
+    transform: scale(0.96);
+    box-shadow: 0 5px 15px rgba(255,92,92,0.7), inset 0 1px 0 rgba(255,255,255,0.5);
+  }
+  .attack-btn svg { width: 20px; height: 20px; }
+
+  .dmg-popup {
+    position: absolute;
+    font-size: 24px;
+    font-weight: 900;
+    color: #fff;
+    text-shadow: 0 0 15px rgba(255,92,92,1), 0 2px 4px rgba(0,0,0,0.8);
+    pointer-events: none;
+    animation: dmgFloat 0.9s ease-out forwards;
+    z-index: 10;
+  }
+  @keyframes dmgFloat {
+    0% { opacity: 1; transform: translate(-50%, 0) scale(0.5); }
+    30% { transform: translate(-50%, -20px) scale(1.3); }
+    100% { opacity: 0; transform: translate(-50%, -80px) scale(0.9); }
+  }
+
+  .inv-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.6);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .inv-title::before, .inv-title::after {
+    content: "";
+    height: 1px;
+    flex: 1;
+    background: linear-gradient(90deg, transparent, rgba(180,160,255,0.6), transparent);
+  }
+
+  .inv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .inv-item {
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 12px 8px;
+    text-align: center;
+    transition: transform 0.2s, border-color 0.2s, background 0.2s;
+    cursor: pointer;
+  }
+  .inv-item:hover {
+    transform: translateY(-3px);
+    border-color: rgba(140,120,255,0.6);
+    background: rgba(255,255,255,0.14);
+  }
+  .inv-item:active { transform: scale(0.95); }
+  .inv-icon {
+    width: 32px;
+    height: 32px;
+    margin: 0 auto 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 8px rgba(180,150,255,0.5));
+  }
+  .inv-icon svg { width: 100%; height: 100%; }
+  .inv-name {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: rgba(255,255,255,0.85);
+    text-transform: uppercase;
+    font-weight: 700;
+  }
+  .inv-cost {
+    font-size: 9px;
+    color: #ffd700;
+    margin-top: 4px;
+    font-weight: 700;
+  }
+  .inv-item.owned {
+    border-color: rgba(74,222,128,0.5);
+    background: rgba(74,222,128,0.1);
+  }
+  .inv-item.owned .inv-cost {
+    color: #4ade80;
+  }
+
+  .log {
+    background: rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font-size: 10px;
+    color: rgba(255,255,255,0.7);
+    max-height: 100px;
+    overflow-y: auto;
+    letter-spacing: 0.5px;
+    line-height: 1.6;
+  }
+  .log div { padding: 2px 0; }
+  .log .log-dmg { color: #ff9c5c; }
+  .log .log-gold { color: #ffd700; }
+  .log .log-kill { color: #ff5cc8; font-weight: 700; }
+  .log .log-buy { color: #4ade80; }
+
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(120%);
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 14px;
+    padding: 12px 22px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    z-index: 100;
+    transition: transform 0.4s cubic-bezier(.2,.8,.2,1);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+  .toast svg { width: 16px; height: 16px; }
+
+  @media (max-width: 360px) {
+    .enemy-sprite { width: 80px; height: 80px; }
+    .attack-btn { font-size: 13px; padding: 15px; }
+    .title { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <a href="index.html" class="back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M19 12H5M11 18l-6-6 6-6"/>
+    </svg>
+    KEMBALI
+  </a>
+
+  <div class="title">MINI GAME</div>
+  <div class="subtitle">RPG Adventure</div>
+
+  <div class="stats">
+    <div class="stat level">
+      <div class="stat-label">Level</div>
+      <div class="stat-value" id="level">1</div>
+    </div>
+    <div class="stat gold">
+      <div class="stat-label">Gold</div>
+      <div class="stat-value" id="gold">0</div>
+    </div>
+    <div class="stat hp">
+      <div class="stat-label">Damage</div>
+      <div class="stat-value" id="damage">5</div>
+    </div>
+  </div>
+
+  <div class="enemy-area" id="enemyArea">
+    <div class="enemy-name" id="enemyName">SLIME</div>
+    <div class="enemy-sprite" id="enemySprite"></div>
+    <div class="enemy-hp-bar">
+      <div class="enemy-hp-fill" id="enemyHpFill"></div>
+    </div>
+    <div class="enemy-hp-text" id="enemyHpText">30 / 30</div>
+  </div>
+
+  <button class="attack-btn" id="attackBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+      <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+      <path d="M13 19l6-6M16 16l4 4M19 21l2-2"/>
+      <path d="M14.5 6.5L18 3l3 3-3.5 3.5"/>
+    </svg>
+    SERANG
+  </button>
+
+  <div class="inv-title">Inventory</div>
+  <div class="inv-grid" id="invGrid"></div>
+
+  <div class="log" id="log"></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ===== SVG ICONS DATABASE =====
+  const icons = {
+    slime: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="slimeGrad" cx="40%" cy="35%">
+          <stop offset="0%" stop-color="#7dffb0"/>
+          <stop offset="100%" stop-color="#00a344"/>
+        </radialGradient>
+      </defs>
+      <path d="M20 70 Q20 30 50 25 Q80 30 80 70 Q80 85 50 88 Q20 85 20 70 Z" fill="url(#slimeGrad)" stroke="#00ff88" stroke-width="1.5"/>
+      <circle cx="40" cy="55" r="4" fill="#0a3a1a"/>
+      <circle cx="60" cy="55" r="4" fill="#0a3a1a"/>
+      <circle cx="41" cy="54" r="1.5" fill="#fff"/>
+      <circle cx="61" cy="54" r="1.5" fill="#fff"/>
+      <path d="M42 68 Q50 75 58 68" stroke="#0a3a1a" stroke-width="2" fill="none" stroke-linecap="round"/>
+      <ellipse cx="35" cy="35" rx="8" ry="4" fill="#fff" opacity="0.6" transform="rotate(-30 35 35)"/>
+    </svg>`,
+
+    goblin: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="gobGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#ffb87a"/>
+          <stop offset="100%" stop-color="#8a4a1a"/>
+        </radialGradient>
+      </defs>
+      <path d="M25 40 L10 25 L20 35 Q18 45 25 50 Z" fill="#8a4a1a"/>
+      <path d="M75 40 L90 25 L80 35 Q82 45 75 50 Z" fill="#8a4a1a"/>
+      <ellipse cx="50" cy="55" rx="28" ry="32" fill="url(#gobGrad)" stroke="#ff8844" stroke-width="1.5"/>
+      <ellipse cx="38" cy="50" rx="4" ry="5" fill="#1a0a00"/>
+      <ellipse cx="62" cy="50" rx="4" ry="5" fill="#1a0a00"/>
+      <circle cx="39" cy="48" r="1.5" fill="#fff"/>
+      <circle cx="63" cy="48" r="1.5" fill="#fff"/>
+      <path d="M35 68 Q50 78 65 68" stroke="#1a0a00" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <path d="M42 70 L45 75 L48 70 Z M52 70 L55 75 L58 70 Z" fill="#fff"/>
+    </svg>`,
+
+    skeleton: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="skelGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#ffffff"/>
+          <stop offset="100%" stop-color="#a8a8b8"/>
+        </linearGradient>
+      </defs>
+      <circle cx="50" cy="40" r="26" fill="url(#skelGrad)" stroke="#666" stroke-width="1"/>
+      <ellipse cx="40" cy="40" rx="6" ry="7" fill="#0a0a1a"/>
+      <ellipse cx="60" cy="40" rx="6" ry="7" fill="#0a0a1a"/>
+      <circle cx="41" cy="38" r="2" fill="#ff5c5c"/>
+      <circle cx="61" cy="38" r="2" fill="#ff5c5c"/>
+      <path d="M46 55 L50 62 L54 55 Z" fill="#0a0a1a"/>
+      <rect x="42" y="65" width="16" height="3" fill="#0a0a1a"/>
+      <rect x="43" y="70" width="14" height="3" fill="#0a0a1a"/>
+      <path d="M35 78 L35 95 M65 78 L65 95 M50 78 L50 95" stroke="#a8a8b8" stroke-width="4" stroke-linecap="round"/>
+    </svg>`,
+
+    orc: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="orcGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#8ab86a"/>
+          <stop offset="100%" stop-color="#3a5a20"/>
+        </radialGradient>
+      </defs>
+      <path d="M18 45 Q10 30 15 18 Q25 22 28 35 Z" fill="#3a5a20"/>
+      <path d="M82 45 Q90 30 85 18 Q75 22 72 35 Z" fill="#3a5a20"/>
+      <ellipse cx="50" cy="52" rx="30" ry="34" fill="url(#orcGrad)" stroke="#5a8a3a" stroke-width="1.5"/>
+      <circle cx="38" cy="45" r="5" fill="#0a1a00"/>
+      <circle cx="62" cy="45" r="5" fill="#0a1a00"/>
+      <circle cx="39" cy="44" r="1.5" fill="#ff9c5c"/>
+      <circle cx="63" cy="44" r="1.5" fill="#ff9c5c"/>
+      <path d="M38 68 Q50 78 62 68" stroke="#0a1a00" stroke-width="2.5" fill="none"/>
+      <path d="M40 70 L43 78 L46 70 Z M54 70 L57 78 L60 70 Z" fill="#fff"/>
+      <path d="M30 20 L35 10 L40 20 Z M60 20 L65 10 L70 20 Z" fill="#3a5a20"/>
+    </svg>`,
+
+    dragon: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="dragGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#ff8ad4"/>
+          <stop offset="100%" stop-color="#a01560"/>
+        </radialGradient>
+      </defs>
+      <path d="M15 30 L5 15 L20 22 L28 10 L35 25 Z" fill="#a01560"/>
+      <path d="M85 30 L95 15 L80 22 L72 10 L65 25 Z" fill="#a01560"/>
+      <ellipse cx="50" cy="55" rx="30" ry="30" fill="url(#dragGrad)" stroke="#ff5cc8" stroke-width="1.5"/>
+      <path d="M30 38 L22 30 L32 33 Z M70 38 L78 30 L68 33 Z" fill="#ff5cc8"/>
+      <ellipse cx="40" cy="50" rx="5" ry="6" fill="#ffd700"/>
+      <ellipse cx="60" cy="50" rx="5" ry="6" fill="#ffd700"/>
+      <ellipse cx="40" cy="50" rx="1.5" ry="5" fill="#0a0a1a"/>
+      <ellipse cx="60" cy="50" rx="1.5" ry="5" fill="#0a0a1a"/>
+      <path d="M35 70 Q50 80 65 70" stroke="#3a001a" stroke-width="2.5" fill="none"/>
+      <path d="M40 72 L43 80 L46 72 Z M54 72 L57 80 L60 72 Z" fill="#fff"/>
+      <circle cx="25" cy="65" r="3" fill="#ff9ce0" opacity="0.6"/>
+      <circle cx="75" cy="65" r="3" fill="#ff9ce0" opacity="0.6"/>
+    </svg>`,
+
+    demon: `<svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="demGrad" cx="50%" cy="40%">
+          <stop offset="0%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#4c1d95"/>
+        </radialGradient>
+      </defs>
+      <path d="M25 25 Q15 5 10 15 Q18 20 22 30 Z" fill="#4c1d95"/>
+      <path d="M75 25 Q85 5 90 15 Q82 20 78 30 Z" fill="#4c1d95"/>
+      <ellipse cx="50" cy="55" rx="30" ry="32" fill="url(#demGrad)" stroke="#a855f7" stroke-width="1.5"/>
+      <ellipse cx="38" cy="50" rx="6" ry="4" fill="#ff0000" transform="rotate(-15 38 50)"/>
+      <ellipse cx="62" cy="50" rx="6" ry="4" fill="#ff0000" transform="rotate(15 62 50)"/>
+      <circle cx="38" cy="50" r="2" fill="#ffd700"/>
+      <circle cx="62" cy="50" r="2" fill="#ffd700"/>
+      <path d="M35 72 Q50 82 65 72" stroke="#0a0018" stroke-width="2.5" fill="none"/>
+      <path d="M40 72 L43 82 L46 72 Z M54 72 L57 82 L60 72 Z" fill="#fff"/>
+      <path d="M30 85 Q50 95 70 85" stroke="#a855f7" stroke-width="2" fill="none" opacity="0.6"/>
+    </svg>`,
+
+    sword: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#b8b0ff">
+      <path d="M14.5 17.5L3 6V3h3l11.5 11.5"/>
+      <path d="M13 19l6-6M16 16l4 4M19 21l2-2"/>
+      <path d="M14.5 6.5L18 3l3 3-3.5 3.5"/>
+    </svg>`,
+
+    axe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#ff9c5c">
+      <path d="M14 12l-8.5 8.5a2.12 2.12 0 1 1-3-3L11 9"/>
+      <path d="M15 13l6-6-3-3-6 6"/>
+      <path d="M9 12l3 3"/>
+    </svg>`,
+
+    staff: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#b8b0ff">
+      <path d="M12 2v20"/>
+      <circle cx="12" cy="4" r="3"/>
+      <path d="M9 11l3-2 3 2"/>
+    </svg>`,
+
+    bow: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#4ade80">
+      <path d="M5 3c8 2 14 8 16 16"/>
+      <path d="M5 3l14 14"/>
+      <path d="M5 3l3 3M16 16l3 3M3 5l2 2M19 19l2 2"/>
+    </svg>`,
+
+    hammer: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#ff9c5c">
+      <path d="M15 12l-8.5 8.5a2.12 2.12 0 1 1-3-3L12 9"/>
+      <path d="M17.64 15L22 10.64"/>
+      <path d="M20.91 11.7l-1.25-1.25c-.6-.6-.93-1.4-.93-2.25v-.86L16.01 4.6a5.56 5.56 0 0 0-3.94-1.64H9l.92.82A6.18 6.18 0 0 1 12 8.4v1.56l2 2h2.47l2.26 1.91"/>
+    </svg>`,
+
+    excalibur: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:#ffd700">
+      <path d="M12 2l3 6 6 1-4.5 4 1 6L12 16l-5.5 3 1-6L3 9l6-1z"/>
+      <path d="M12 8v8"/>
+    </svg>`
+  };
+
+  // ===== STATE =====
+  const state = {
+    level: 1,
+    gold: 0,
+    damage: 5,
+    kills: 0,
+    enemy: null
+  };
+
+  // ===== ENEMY DATABASE =====
+  const enemyTypes = [
+    { name: 'SLIME', icon: 'slime', hp: 30, gold: 5, color: '#4ade80' },
+    { name: 'GOBLIN', icon: 'goblin', hp: 50, gold: 10, color: '#ff9c5c' },
+    { name: 'SKELETON', icon: 'skeleton', hp: 80, gold: 18, color: '#ddd' },
+    { name: 'ORC', icon: 'orc', hp: 120, gold: 30, color: '#8ab86a' },
+    { name: 'DRAGON', icon: 'dragon', hp: 200, gold: 60, color: '#ff5cc8' },
+    { name: 'DEMON', icon: 'demon', hp: 350, gold: 120, color: '#a855f7' }
+  ];
+
+  // ===== SHOP ITEMS =====
+  const shopItems = [
+    { id: 'sword', name: 'Pedang', icon: 'sword', cost: 20, dmg: 3, bought: false },
+    { id: 'axe', name: 'Kapak', icon: 'axe', cost: 50, dmg: 8, bought: false },
+    { id: 'staff', name: 'Tongkat', icon: 'staff', cost: 120, dmg: 18, bought: false },
+    { id: 'bow', name: 'Panah', icon: 'bow', cost: 250, dmg: 35, bought: false },
+    { id: 'hammer', name: 'Hammer', icon: 'hammer', cost: 500, dmg: 60, bought: false },
+    { id: 'excalibur', name: 'Excalibur', icon: 'excalibur', cost: 1200, dmg: 120, bought: false }
+  ];
+
+  // ===== SPAWN ENEMY =====
+  function spawnEnemy() {
+    const idx = Math.min(Math.floor((state.level - 1) / 2), enemyTypes.length - 1);
+    const base = enemyTypes[idx];
+    const scale = 1 + (state.level - 1) * 0.3;
+    state.enemy = {
+      name: base.name,
+      icon: base.icon,
+      maxHp: Math.floor(base.hp * scale),
+      hp: Math.floor(base.hp * scale),
+      gold: Math.floor(base.gold * scale),
+      color: base.color
+    };
+    renderEnemy();
+  }
+
+  function renderEnemy() {
+    const e = state.enemy;
+    document.getElementById('enemyName').textContent = e.name;
+    document.getElementById('enemyName').style.color = e.color;
+    document.getElementById('enemySprite').innerHTML = icons[e.icon];
+    document.getElementById('enemySprite').querySelector('svg').style.filter = `drop-shadow(0 0 20px ${e.color}aa)`;
+    const pct = (e.hp / e.maxHp) * 100;
+    document.getElementById('enemyHpFill').style.width = pct + '%';
+    document.getElementById('enemyHpText').textContent = `${e.hp} / ${e.maxHp}`;
+  }
+
+  function renderStats() {
+    document.getElementById('level').textContent = state.level;
+    document.getElementById('gold').textContent = state.gold;
+    document.getElementById('damage').textContent = state.damage;
+  }
+
+  function renderShop() {
+    const grid = document.getElementById('invGrid');
+    grid.innerHTML = '';
+    shopItems.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'inv-item' + (item.bought ? ' owned' : '');
+      div.innerHTML = `
+        <div class="inv-icon">${icons[item.icon]}</div>
+        <div class="inv-name">${item.name}</div>
+        <div class="inv-cost">${item.bought ? 'DIMILIKI' : item.cost}</div>
+      `;
+      if (!item.bought) {
+        div.onclick = () => buyItem(item);
+      }
+      grid.appendChild(div);
+    });
+  }
+
+  function buyItem(item) {
+    if (state.gold < item.cost) {
+      showToast('Gold tidak cukup', 'error');
+      return;
+    }
+    state.gold -= item.cost;
+    state.damage += item.dmg;
+    item.bought = true;
+    addLog(`Membeli ${item.name} (+${item.dmg} dmg)`, 'log-buy');
+    showToast(`${item.name} dibeli!`, 'success');
+    renderStats();
+    renderShop();
+  }
+
+  function attack() {
+    const e = state.enemy;
+    const dmg = Math.floor(state.damage * (0.9 + Math.random() * 0.2));
+    e.hp = Math.max(0, e.hp - dmg);
+
+    const sprite = document.getElementById('enemySprite');
+    sprite.classList.remove('hit');
+    void sprite.offsetWidth;
+    sprite.classList.add('hit');
+
+    showDamagePopup(dmg);
+    addLog(`Menyerang ${e.name} — ${dmg} damage`, 'log-dmg');
+    renderEnemy();
+
+    if (e.hp <= 0) killEnemy();
+  }
+
+  function killEnemy() {
+    const e = state.enemy;
+    state.gold += e.gold;
+    state.kills++;
+    addLog(`${e.name} dikalahkan! +${e.gold} gold`, 'log-kill');
+    showToast(`+${e.gold} GOLD`, 'success');
+
+    if (state.kills % 3 === 0) {
+      state.level++;
+      addLog(`Naik ke level ${state.level}!`, 'log-gold');
+      showToast(`LEVEL ${state.level}`, 'level');
+    }
+
+    renderStats();
+    setTimeout(spawnEnemy, 400);
+  }
+
+  function showDamagePopup(dmg) {
+    const area = document.getElementById('enemyArea');
+    const popup = document.createElement('div');
+    popup.className = 'dmg-popup';
+    popup.textContent = '-' + dmg;
+    popup.style.left = (30 + Math.random() * 40) + '%';
+    popup.style.top = (30 + Math.random() * 20) + '%';
+    area.appendChild(popup);
+    setTimeout(() => popup.remove(), 900);
+  }
+
+  function addLog(text, cls = '') {
+    const log = document.getElementById('log');
+    const div = document.createElement('div');
+    div.className = cls;
+    div.textContent = '› ' + text;
+    log.appendChild(div);
+    log.scrollTop = log.scrollHeight;
+    while (log.children.length > 20) log.removeChild(log.firstChild);
+  }
+
+  let toastTimer;
+  function showToast(text, type) {
+    const t = document.getElementById('toast');
+    let icon = '';
+    if (type === 'success') {
+      icon = `<svg viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`;
+    } else if (type === 'error') {
+      icon = `<svg viewBox="0 0 24 24" fill="none" stroke="#ff5c5c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+    } else if (type === 'level') {
+      icon = `<svg viewBox="0 0 24 24" fill="none" stroke="#ff9ce0" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>`;
+    }
+    t.innerHTML = icon + '<span>' + text + '</span>';
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 1800);
+  }
+
+  document.getElementById('attackBtn').addEventListener('click', attack);
+  renderStats();
+  renderShop();
+  spawnEnemy();
+  addLog('Selamat datang di Mini Game!', 'log-buy');
+  addLog('Klik SERANG untuk melawan musuh.', '');
+</script>
+
+</body>
+  </html>
