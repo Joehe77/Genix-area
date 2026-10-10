@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>XBERTRON v8.0 — GENIX AREA</title>
+<title>VOID PROJECT — GENIX AREA</title>
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -16,29 +16,18 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* ================= LOADING SCREEN ================= */
   #loader {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: #0a0a1a;
     z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     gap: 24px;
-    transition: opacity 0.8s ease, visibility 0.8s ease;
+    transition: opacity 0.8s, visibility 0.8s;
   }
-
-  #loader.hide {
-    opacity: 0;
-    visibility: hidden;
-  }
-
+  #loader.hide { opacity: 0; visibility: hidden; }
   .loader-logo {
-    font-size: 26px;
-    font-weight: 800;
-    letter-spacing: 6px;
+    font-size: 24px; font-weight: 800; letter-spacing: 5px;
     background: linear-gradient(90deg, #fff, #b8b0ff, #ff9ce0, #fff);
     background-size: 300% 100%;
     -webkit-background-clip: text;
@@ -46,94 +35,129 @@
     background-clip: text;
     animation: gradientFlow 3s linear infinite, titleGlow 2s ease-in-out infinite;
   }
-
   .loader-bar {
-    width: 200px;
-    height: 4px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    overflow: hidden;
+    width: 200px; height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px; overflow: hidden;
     position: relative;
   }
-
   .loader-bar::after {
-    content: "";
-    position: absolute;
-    top: 0; left: 0;
-    height: 100%;
-    width: 0%;
+    content: ""; position: absolute; top: 0; left: 0;
+    height: 100%; width: 0%;
     background: linear-gradient(90deg, #6a5cff, #ff5cc8);
-    border-radius: 4px;
-    box-shadow: 0 0 15px rgba(106, 92, 255, 0.8);
+    box-shadow: 0 0 15px rgba(106,92,255,0.8);
     animation: loadFill 2.2s ease forwards;
   }
-
-  @keyframes loadFill {
-    0%   { width: 0%; }
-    100% { width: 100%; }
-  }
-
+  @keyframes loadFill { 0% { width: 0%; } 100% { width: 100%; } }
   .loader-text {
-    font-size: 10px;
-    letter-spacing: 4px;
-    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px; letter-spacing: 4px;
+    color: rgba(255,255,255,0.5);
     text-transform: uppercase;
     animation: pulseText 1.5s ease-in-out infinite;
   }
+  @keyframes pulseText { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
 
-  @keyframes pulseText {
-    0%, 100% { opacity: 0.4; }
-    50%      { opacity: 1; }
+  /* ========== TRANSISI LOADING SAAT KLIK MASUK ========== */
+  #redirect {
+    position: fixed; inset: 0;
+    background: rgba(10, 10, 26, 0.98);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
+    z-index: 10000;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 24px;
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.4s, visibility 0.4s;
+  }
+  #redirect.show { opacity: 1; visibility: visible; }
+
+  .redirect-ring {
+    width: 70px; height: 70px;
+    border: 3px solid rgba(255,255,255,0.1);
+    border-top-color: #6a5cff;
+    border-right-color: #ff5cc8;
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    box-shadow: 0 0 30px rgba(106,92,255,0.6);
+    position: relative;
+  }
+  .redirect-ring::after {
+    content: "";
+    position: absolute;
+    inset: 8px;
+    border: 2px solid transparent;
+    border-top-color: #00d4ff;
+    border-left-color: #b8b0ff;
+    border-radius: 50%;
+    animation: spin 1.4s linear infinite reverse;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .redirect-text {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #fff, #b8b0ff, #ff9ce0, #fff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 3s linear infinite;
   }
 
-  /* ================= WELCOME NOTIF ================= */
+  .redirect-sub {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    margin-top: -10px;
+  }
+
+  .redirect-dots {
+    display: flex;
+    gap: 6px;
+  }
+  .redirect-dots span {
+    width: 6px; height: 6px;
+    background: #b8b0ff;
+    border-radius: 50%;
+    animation: dotBounce 1.2s ease-in-out infinite;
+  }
+  .redirect-dots span:nth-child(2) { animation-delay: 0.15s; background: #ff9ce0; }
+  .redirect-dots span:nth-child(3) { animation-delay: 0.3s; background: #00d4ff; }
+  @keyframes dotBounce {
+    0%,100% { transform: translateY(0); opacity: 0.5; }
+    50% { transform: translateY(-8px); opacity: 1; }
+  }
+
+  /* WELCOME NOTIF */
   #welcome {
-    position: fixed;
-    top: 20px;
-    left: 50%;
+    position: fixed; top: 20px; left: 50%;
     transform: translateX(-50%) translateY(-120%);
-    background: rgba(255, 255, 255, 0.12);
+    background: rgba(255,255,255,0.12);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255,255,255,0.25);
     border-radius: 16px;
     padding: 14px 22px;
     z-index: 9998;
-    box-shadow: 0 10px 40px rgba(106, 92, 255, 0.5);
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    box-shadow: 0 10px 40px rgba(106,92,255,0.5);
+    display: flex; align-items: center; gap: 10px;
     transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
-    pointer-events: none;
     max-width: 90%;
   }
-
-  #welcome.show {
-    transform: translateX(-50%) translateY(0);
-  }
-
+  #welcome.show { transform: translateX(-50%) translateY(0); }
   #welcome .dot {
-    width: 8px;
-    height: 8px;
-    background: #4ade80;
-    border-radius: 50%;
+    width: 8px; height: 8px;
+    background: #4ade80; border-radius: 50%;
     box-shadow: 0 0 10px #4ade80;
     animation: dotPulse 1.5s ease infinite;
     flex-shrink: 0;
   }
-
-  @keyframes dotPulse {
-    0%, 100% { transform: scale(1); opacity: 1; }
-    50%      { transform: scale(1.4); opacity: 0.6; }
-  }
-
-  #welcome .msg {
-    font-size: 12px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: #fff;
-  }
-
+  @keyframes dotPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.4); } }
+  #welcome .msg { font-size: 12px; font-weight: 600; }
   #welcome .msg span {
     background: linear-gradient(90deg, #b8b0ff, #ff9ce0);
     -webkit-background-clip: text;
@@ -142,11 +166,9 @@
     font-weight: 800;
   }
 
-  /* BACKGROUND BERGERAK */
   body::before {
     content: "";
-    position: fixed;
-    inset: -50%;
+    position: fixed; inset: -50%;
     background:
       radial-gradient(circle at 15% 20%, #6a5cff 0%, transparent 40%),
       radial-gradient(circle at 85% 15%, #ff5cc8 0%, transparent 40%),
@@ -155,36 +177,27 @@
     z-index: -2;
     animation: bgMove 15s ease-in-out infinite alternate;
   }
-
   @keyframes bgMove {
-    0%   { transform: translate(0, 0) rotate(0deg); }
-    100% { transform: translate(-3%, -3%) rotate(3deg); }
+    0% { transform: translate(0,0) rotate(0deg); }
+    100% { transform: translate(-3%,-3%) rotate(3deg); }
   }
 
-  /* PARTIKEL BINTANG */
   .stars {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    overflow: hidden;
+    position: fixed; inset: 0;
+    z-index: -1; overflow: hidden;
     pointer-events: none;
   }
-
   .star {
     position: absolute;
-    width: 2px;
-    height: 2px;
     background: #fff;
     border-radius: 50%;
-    opacity: 0.6;
+    box-shadow: 0 0 6px rgba(255,255,255,0.8);
     animation: floatUp linear infinite;
-    box-shadow: 0 0 6px rgba(255, 255, 255, 0.8);
   }
-
   @keyframes floatUp {
-    0%   { transform: translateY(100vh) scale(0.5); opacity: 0; }
-    10%  { opacity: 0.8; }
-    90%  { opacity: 0.8; }
+    0% { transform: translateY(100vh) scale(0.5); opacity: 0; }
+    10% { opacity: 0.8; }
+    90% { opacity: 0.8; }
     100% { transform: translateY(-10vh) scale(1); opacity: 0; }
   }
 
@@ -196,16 +209,9 @@
     z-index: 1;
   }
 
-  /* HEADER */
-  .header {
-    text-align: center;
-    margin-bottom: 24px;
-  }
-
+  .header { text-align: center; margin-bottom: 24px; }
   .header h1 {
-    font-size: 22px;
-    font-weight: 800;
-    letter-spacing: 4px;
+    font-size: 20px; font-weight: 800; letter-spacing: 3px;
     background: linear-gradient(90deg, #fff, #b8b0ff, #ff9ce0, #fff);
     background-size: 300% 100%;
     -webkit-background-clip: text;
@@ -213,72 +219,61 @@
     background-clip: text;
     animation: titleGlow 4s ease-in-out infinite, gradientFlow 6s linear infinite;
   }
-
   @keyframes titleGlow {
-    0%, 100% { filter: drop-shadow(0 0 10px rgba(106, 92, 255, 0.6)); }
-    50%      { filter: drop-shadow(0 0 25px rgba(255, 92, 200, 0.9)); }
+    0%,100% { filter: drop-shadow(0 0 10px rgba(106,92,255,0.6)); }
+    50% { filter: drop-shadow(0 0 25px rgba(255,92,200,0.9)); }
   }
-
   @keyframes gradientFlow {
-    0%   { background-position: 0% 50%; }
+    0% { background-position: 0% 50%; }
     100% { background-position: 300% 50%; }
   }
-
-  /* TYPING EFFECT SUBTITLE */
   .header p {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 3px;
-    margin-top: 8px;
+    font-size: 10px; color: rgba(255,255,255,0.6);
+    letter-spacing: 3px; margin-top: 8px;
     text-transform: uppercase;
-    display: inline-block;
-    overflow: hidden;
-    white-space: nowrap;
-    border-right: 2px solid rgba(255, 255, 255, 0.7);
-    animation:
-      typing 2s steps(12) 2.4s backwards,
-      blink 0.8s step-end 2.4s infinite;
-    width: 0;
+    animation: fadeIn 1.2s ease 0.3s backwards;
   }
 
-  @keyframes typing {
-    from { width: 0; }
-    to   { width: 100%; }
+  .divider {
+    display: flex; align-items: center; justify-content: center;
+    gap: 12px; margin: 16px 0 22px;
+    animation: fadeIn 1.2s ease 0.5s backwards;
+  }
+  .divider .line {
+    height: 1px; flex: 1; max-width: 90px;
+    background: linear-gradient(90deg, transparent, rgba(180,160,255,0.7), transparent);
+    box-shadow: 0 0 8px rgba(140,120,255,0.6);
+  }
+  .divider .diamond {
+    width: 8px; height: 8px;
+    background: linear-gradient(135deg, #b8b0ff, #ff9ce0);
+    transform: rotate(45deg);
+    box-shadow: 0 0 12px rgba(180,150,255,0.9), 0 0 20px rgba(255,150,220,0.5);
+    animation: diamondSpin 3s ease-in-out infinite;
+  }
+  @keyframes diamondSpin {
+    0%,100% { transform: rotate(45deg) scale(1); }
+    50% { transform: rotate(225deg) scale(1.3); }
   }
 
-  @keyframes blink {
-    0%, 100% { border-color: rgba(255, 255, 255, 0.7); }
-    50%      { border-color: transparent; }
-  }
-
-  /* HERO GIF */
   .hero {
     padding: 10px;
     border-radius: 24px;
-    background: rgba(255, 255, 255, 0.08);
+    background: rgba(255,255,255,0.08);
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    margin-bottom: 22px;
-    overflow: hidden;
-    animation: fadeInUp 0.8s ease backwards;
-    animation-delay: 0.2s;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.2);
+    margin-bottom: 22px; overflow: hidden;
+    animation: fadeInUp 0.8s ease 0.2s backwards;
     transition: transform 0.4s, box-shadow 0.4s;
   }
-
   .hero:hover {
     transform: translateY(-3px);
-    box-shadow: 0 15px 45px rgba(106, 92, 255, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 45px rgba(106,92,255,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
   }
+  .hero img { width: 100%; display: block; border-radius: 16px; }
 
-  .hero img {
-    width: 100%;
-    display: block;
-    border-radius: 16px;
-  }
-
-  /* GRID */
   .grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -286,13 +281,9 @@
   }
 
   .item {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    display: flex; flex-direction: column; gap: 8px;
     animation: fadeInUp 0.7s ease backwards;
-    transition: transform 0.35s cubic-bezier(.2,.8,.2,1);
   }
-
   .item:nth-child(1) { animation-delay: 0.4s; }
   .item:nth-child(2) { animation-delay: 0.55s; }
   .item:nth-child(3) { animation-delay: 0.7s; }
@@ -300,194 +291,212 @@
 
   @keyframes fadeInUp {
     from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
+    to { opacity: 1; transform: translateY(0); }
   }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-  /* KARTU AVATAR */
   .card {
     position: relative;
     aspect-ratio: 3 / 4;
     border-radius: 22px;
     padding: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    background: rgba(255, 255, 255, 0.10);
+    display: flex; align-items: center; justify-content: center;
+    background: rgba(255,255,255,0.10);
     backdrop-filter: blur(20px) saturate(150%);
     -webkit-backdrop-filter: blur(20px) saturate(150%);
-    border: 1px solid rgba(255, 255, 255, 0.20);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255,255,255,0.20);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.25);
     overflow: hidden;
     transition: transform 0.4s cubic-bezier(.2,.8,.2,1), box-shadow 0.4s, border-color 0.4s;
   }
-
   .card::before {
-    content: "";
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 50%;
+    content: ""; position: absolute;
+    top: 0; left: 0; right: 0; height: 50%;
     background: linear-gradient(180deg, rgba(255,255,255,0.15), transparent);
     border-radius: 22px 22px 0 0;
     pointer-events: none;
   }
-
   .card::after {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    content: ""; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
     background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
     transition: left 0.8s;
-    pointer-events: none;
-    z-index: 2;
+    pointer-events: none; z-index: 2;
   }
-
   .card:hover::after { left: 100%; }
-
   .card img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    border-radius: 12px;
-    position: relative;
-    z-index: 1;
+    width: 100%; height: 100%;
+    object-fit: contain; border-radius: 12px;
+    position: relative; z-index: 1;
     transition: transform 0.5s;
   }
-
   .card:hover img { transform: scale(1.06); }
-
   .card:hover {
     transform: translateY(-6px) scale(1.02);
-    border-color: rgba(140, 120, 255, 0.8);
-    box-shadow:
-      0 15px 40px rgba(106, 92, 255, 0.6),
-      0 0 0 1px rgba(140, 120, 255, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    border-color: rgba(140,120,255,0.8);
+    box-shadow: 0 15px 40px rgba(106,92,255,0.6), 0 0 0 1px rgba(140,120,255,0.5), inset 0 1px 0 rgba(255,255,255,0.4);
   }
-
   .card.aktif {
-    border-color: rgba(140, 120, 255, 0.7);
-    box-shadow:
-      0 8px 32px rgba(106, 92, 255, 0.5),
-      0 0 0 1px rgba(140, 120, 255, 0.4),
-      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+    border-color: rgba(140,120,255,0.7);
+    box-shadow: 0 8px 32px rgba(106,92,255,0.5), 0 0 0 1px rgba(140,120,255,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
     animation: cardPulse 3s ease-in-out infinite;
   }
-
   @keyframes cardPulse {
-    0%, 100% { box-shadow: 0 8px 32px rgba(106, 92, 255, 0.5), 0 0 0 1px rgba(140, 120, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.3); }
-    50%      { box-shadow: 0 8px 40px rgba(140, 120, 255, 0.8), 0 0 0 2px rgba(140, 120, 255, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.4); }
+    0%,100% { box-shadow: 0 8px 32px rgba(106,92,255,0.5), 0 0 0 1px rgba(140,120,255,0.4), inset 0 1px 0 rgba(255,255,255,0.3); }
+    50% { box-shadow: 0 8px 40px rgba(140,120,255,0.8), 0 0 0 2px rgba(140,120,255,0.6), inset 0 1px 0 rgba(255,255,255,0.4); }
   }
 
-  /* TOMBOL MASUK */
   .btn-zepeto {
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    width: 100%;
-    padding: 10px 12px;
+    display: flex; align-items: center; justify-content: center;
+    gap: 6px; width: 100%; padding: 10px 12px;
     border-radius: 14px;
-    text-decoration: none;
-    font-size: 11px;
-    font-weight: 800;
-    letter-spacing: 1.5px;
-    color: #fff;
-    text-transform: uppercase;
-    overflow: hidden;
-
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px; font-weight: 800;
+    letter-spacing: 1.5px; color: #fff;
+    text-transform: uppercase; overflow: hidden;
     background: linear-gradient(135deg, #6a5cff 0%, #ff5cc8 100%);
     background-size: 200% 200%;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    box-shadow:
-      0 6px 18px rgba(106, 92, 255, 0.45),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
-
+    border: 1px solid rgba(255,255,255,0.25);
+    box-shadow: 0 6px 18px rgba(106,92,255,0.45), inset 0 1px 0 rgba(255,255,255,0.35);
     animation: btnGradient 4s ease infinite;
     transition: transform 0.2s, box-shadow 0.2s;
   }
-
   @keyframes btnGradient {
-    0%, 100% { background-position: 0% 50%; }
-    50%      { background-position: 100% 50%; }
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
   }
-
   .btn-zepeto::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
+    content: ""; position: absolute;
+    top: 0; left: -100%; width: 100%; height: 100%;
     background: linear-gradient(120deg, transparent, rgba(255,255,255,0.5), transparent);
     transition: left 0.6s;
   }
-
   .btn-zepeto:hover::before { left: 100%; }
-
   .btn-zepeto:active { transform: scale(0.95); }
-
   @media (hover: hover) {
     .btn-zepeto:hover {
       transform: translateY(-2px);
-      box-shadow:
-        0 12px 28px rgba(106, 92, 255, 0.7),
-        inset 0 1px 0 rgba(255, 255, 255, 0.4);
+      box-shadow: 0 12px 28px rgba(106,92,255,0.7), inset 0 1px 0 rgba(255,255,255,0.4);
     }
   }
-
-  .btn-zepeto svg {
-    width: 14px;
-    height: 14px;
-    transition: transform 0.3s;
-  }
-
+  .btn-zepeto svg { width: 14px; height: 14px; transition: transform 0.3s; }
   .btn-zepeto:hover svg { transform: translateX(4px); }
 
-  /* FOOTER */
-  .footer {
-    text-align: center;
-    margin-top: 32px;
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.35);
+  /* TOMBOL MINI GAME */
+  .btn-game {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-radius: 18px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
     letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+
+    background: linear-gradient(135deg, #ff5cc8 0%, #6a5cff 50%, #00d4ff 100%);
+    background-size: 300% 300%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+      0 10px 30px rgba(255, 92, 200, 0.5),
+      0 0 0 1px rgba(140, 120, 255, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+
+    animation: btnGameFlow 5s ease infinite, btnGamePulse 2.5s ease-in-out infinite;
+    transition: transform 0.25s;
+  }
+  @keyframes btnGameFlow {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes btnGamePulse {
+    0%,100% { box-shadow: 0 10px 30px rgba(255,92,200,0.5), 0 0 0 1px rgba(140,120,255,0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
+    50% { box-shadow: 0 10px 40px rgba(106,92,255,0.9), 0 0 0 2px rgba(140,120,255,0.7), inset 0 1px 0 rgba(255,255,255,0.5); }
+  }
+  .btn-game::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+    transition: left 0.7s;
+  }
+  .btn-game:hover::before { left: 100%; }
+  .btn-game:active { transform: scale(0.97); }
+  @media (hover: hover) {
+    .btn-game:hover { transform: translateY(-3px); }
+  }
+  .btn-game svg {
+    width: 22px;
+    height: 22px;
+    animation: gameIconBounce 2s ease-in-out infinite;
+  }
+  @keyframes gameIconBounce {
+    0%,100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-3px) rotate(-8deg); }
+  }
+
+  .footer {
+    text-align: center; margin-top: 32px;
+    font-size: 10px; color: rgba(255,255,255,0.35);
+    letter-spacing: 3px;
+    animation: fadeIn 1.5s ease 1s backwards;
   }
 
   @media (max-width: 360px) {
     .grid { gap: 10px; }
     .container { padding: 20px 14px 40px; }
-    .header h1 { font-size: 20px; }
+    .header h1 { font-size: 18px; }
     .btn-zepeto { font-size: 10px; padding: 9px 8px; }
   }
 </style>
 </head>
 <body>
 
-<!-- ============ LOADING SCREEN ============ -->
 <div id="loader">
-  <div class="loader-logo">XBERTRON</div>
+  <div class="loader-logo">VOID PROJECT</div>
   <div class="loader-bar"></div>
   <div class="loader-text">Memuat GENIX AREA...</div>
 </div>
 
-<!-- ============ WELCOME NOTIF ============ -->
+<!-- ========== TRANSISI LOADING KE ZEPETO ========== -->
+<div id="redirect">
+  <div class="redirect-ring"></div>
+  <div class="redirect-text">Menghubungkan</div>
+  <div class="redirect-sub">ke Zepeto</div>
+  <div class="redirect-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
 <div id="welcome">
   <div class="dot"></div>
   <div class="msg">Selamat datang di <span>GENIX AREA</span></div>
 </div>
 
-<!-- PARTIKEL BINTANG -->
 <div class="stars" id="stars"></div>
 
 <div class="container">
 
   <div class="header">
-    <h1>XBERTRON v8.0</h1>
+    <h1>VOID PROJECT</h1>
     <p>GENIX AREA</p>
+  </div>
+
+  <div class="divider">
+    <div class="line"></div>
+    <div class="diamond"></div>
+    <div class="line"></div>
   </div>
 
   <div class="hero">
@@ -500,65 +509,92 @@
       <div class="card aktif">
         <img src="gambar1.png" alt="Avatar 1">
       </div>
-      <a href="zepeto://zepeto.me/KODE1" class="btn-zepeto" onclick="fallbackZepeto(event, 'KODE1')">
+      <button class="btn-zepeto" onclick="goZepeto('KODE1')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
         MASUK
-      </a>
+      </button>
     </div>
 
     <div class="item">
       <div class="card">
         <img src="gambar2.png" alt="Avatar 2">
       </div>
-      <a href="zepeto://zepeto.me/KODE2" class="btn-zepeto" onclick="fallbackZepeto(event, 'KODE2')">
+      <button class="btn-zepeto" onclick="goZepeto('KODE2')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
         MASUK
-      </a>
+      </button>
     </div>
 
     <div class="item">
       <div class="card">
         <img src="gambar3.png" alt="Avatar 3">
       </div>
-      <a href="zepeto://zepeto.me/KODE3" class="btn-zepeto" onclick="fallbackZepeto(event, 'KODE3')">
+      <button class="btn-zepeto" onclick="goZepeto('KODE3')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
         MASUK
-      </a>
+      </button>
     </div>
 
     <div class="item">
       <div class="card">
         <img src="gambar4.png" alt="Avatar 4">
       </div>
-      <a href="zepeto://zepeto.me/KODE4" class="btn-zepeto" onclick="fallbackZepeto(event, 'KODE4')">
+      <button class="btn-zepeto" onclick="goZepeto('KODE4')">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
           <path d="M5 12h14M13 6l6 6-6 6"/>
         </svg>
         MASUK
-      </a>
+      </button>
     </div>
 
   </div>
 
-  <div class="footer">© XBERTRON v8.0 — GENIX AREA</div>
+  <a href="game.html" class="btn-game">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <rect x="2" y="6" width="20" height="12" rx="3"/>
+      <circle cx="8" cy="12" r="1.5" fill="currentColor"/>
+      <circle cx="16" cy="12" r="1.5" fill="currentColor"/>
+      <path d="M6 9v6M18 9v6" stroke-linecap="round"/>
+    </svg>
+    MINI GAME
+  </a>
+
+  <div class="footer">© VOID PROJECT — GENIX AREA</div>
 
 </div>
 
 <script>
-  // Fallback Zepeto
-  function fallbackZepeto(e, kode) {
-    const waktu = Date.now();
+  // ========== KLIK MASUK → TAMPILKAN LOADING → BUKA ZEPETO ==========
+  function goZepeto(kode) {
+    // Tampilkan layar loading
+    const redirect = document.getElementById('redirect');
+    redirect.classList.add('show');
+
+    // Coba buka app Zepeto setelah 1.2 detik
     setTimeout(() => {
-      if (Date.now() - waktu < 1500 && !document.hidden) {
-        window.location.href = "https://zepeto.me/" + kode;
-      }
-    }, 800);
+      // Simpan waktu sebelum pindah
+      const waktu = Date.now();
+
+      // Trigger deep link (buka app Zepeto)
+      window.location.href = "zepeto://zepeto.me/" + kode;
+
+      // Fallback: kalau app gak ada, buka web Zepeto setelah 1.5 detik
+      setTimeout(() => {
+        if (Date.now() - waktu < 2000 && !document.hidden) {
+          window.location.href = "https://zepeto.me/" + kode;
+        } else {
+          // Kalau app kebuka (halaman jadi hidden), sembunyikan loading
+          setTimeout(() => redirect.classList.remove('show'), 3000);
+        }
+      }, 1500);
+
+    }, 1200);
   }
 
   // Partikel bintang
@@ -569,25 +605,19 @@
     star.style.left = Math.random() * 100 + '%';
     star.style.animationDuration = (Math.random() * 8 + 6) + 's';
     star.style.animationDelay = Math.random() * 5 + 's';
-    star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
+    const size = (Math.random() * 2 + 1) + 'px';
+    star.style.width = star.style.height = size;
     starsContainer.appendChild(star);
   }
 
-  // Loading screen hilang setelah 2.5 detik
+  // Loading screen
   window.addEventListener('load', () => {
     setTimeout(() => {
       document.getElementById('loader').classList.add('hide');
-
-      // Welcome notif muncul setelah loader hilang
       setTimeout(() => {
         const welcome = document.getElementById('welcome');
         welcome.classList.add('show');
-
-        // Hilang otomatis setelah 3.5 detik
-        setTimeout(() => {
-          welcome.classList.remove('show');
-        }, 3500);
-
+        setTimeout(() => welcome.classList.remove('show'), 3500);
       }, 400);
     }, 2500);
   });
