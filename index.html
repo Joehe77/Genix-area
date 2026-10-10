@@ -183,10 +183,7 @@
     visibility: hidden;
     transition: opacity 0.4s, visibility 0.4s;
   }
-  .instruction-popup.show {
-    opacity: 1;
-    visibility: visible;
-  }
+  .instruction-popup.show { opacity: 1; visibility: visible; }
   .instruction-card {
     background: linear-gradient(180deg, rgba(30, 30, 50, 0.95), rgba(15, 15, 30, 0.98));
     border: 1px solid rgba(140, 120, 255, 0.5);
@@ -206,8 +203,7 @@
     to { opacity: 1; transform: scale(1) translateY(0); }
   }
   .instruction-icon {
-    width: 60px;
-    height: 60px;
+    width: 60px; height: 60px;
     margin: 0 auto 16px;
     color: #6a5cff;
     filter: drop-shadow(0 0 20px rgba(106, 92, 255, 0.8));
@@ -217,10 +213,7 @@
     0%,100% { transform: scale(1); }
     50% { transform: scale(1.1); }
   }
-  .instruction-icon svg {
-    width: 100%;
-    height: 100%;
-  }
+  .instruction-icon svg { width: 100%; height: 100%; }
   .instruction-title {
     font-size: 14px;
     font-weight: 800;
@@ -264,9 +257,7 @@
     animation: btnGradient 4s ease infinite;
     transition: transform 0.2s;
   }
-  .instruction-close:active {
-    transform: scale(0.97);
-  }
+  .instruction-close:active { transform: scale(0.97); }
 
   /* ========== BACKGROUND ========== */
   body::before {
@@ -552,6 +543,65 @@
     50% { transform: translateY(-3px) rotate(-8deg); }
   }
 
+  /* ========== TOMBOL ENTER MAP ========== */
+  .btn-map {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    margin-top: 12px;
+    padding: 16px 20px;
+    border-radius: 18px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: #fff;
+    text-transform: uppercase;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #00d4ff 0%, #6a5cff 50%, #b8b0ff 100%);
+    background-size: 300% 300%;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    box-shadow:
+      0 10px 30px rgba(0, 212, 255, 0.5),
+      0 0 0 1px rgba(0, 212, 255, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    animation: btnMapFlow 5s ease infinite, btnMapPulse 2.5s ease-in-out infinite;
+    transition: transform 0.25s;
+  }
+  @keyframes btnMapFlow {
+    0%,100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  @keyframes btnMapPulse {
+    0%,100% { box-shadow: 0 10px 30px rgba(0,212,255,0.5), 0 0 0 1px rgba(0,212,255,0.4), inset 0 1px 0 rgba(255,255,255,0.4); }
+    50% { box-shadow: 0 10px 40px rgba(106,92,255,0.9), 0 0 0 2px rgba(0,212,255,0.7), inset 0 1px 0 rgba(255,255,255,0.5); }
+  }
+  .btn-map::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(120deg, transparent, rgba(255,255,255,0.6), transparent);
+    transition: left 0.7s;
+  }
+  .btn-map:hover::before { left: 100%; }
+  .btn-map:active { transform: scale(0.97); }
+  @media (hover: hover) {
+    .btn-map:hover { transform: translateY(-3px); }
+  }
+  .btn-map svg {
+    width: 22px;
+    height: 22px;
+    animation: mapIconBounce 2s ease-in-out infinite;
+  }
+  @keyframes mapIconBounce {
+    0%,100% { transform: translateY(0) scale(1); }
+    50% { transform: translateY(-3px) scale(1.1); }
+  }
+
   /* ========== SECTION REPORT ========== */
   .report-section {
     margin-top: 20px;
@@ -831,6 +881,15 @@
     MINI GAME
   </a>
 
+  <!-- TOMBOL ENTER MAP -->
+  <a href="map.html" class="btn-map">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+      <circle cx="12" cy="10" r="3"/>
+    </svg>
+    ENTER MAP
+  </a>
+
   <!-- SECTION REPORT -->
   <div class="report-section">
     <div class="report-header">
@@ -895,19 +954,16 @@
     const input = document.getElementById('reportUser');
     let username = input.value.trim();
 
-    // Kalau paste link lengkap, ambil username-nya
     if (username.includes('/profile/')) {
       username = username.split('/profile/').pop().split('/')[0].split('?')[0];
     } else if (username.includes('zepeto.me/')) {
       username = username.split('zepeto.me/').pop().split('/')[0].split('?')[0];
     }
 
-    // Hapus @
     if (username.startsWith('@')) {
       username = username.slice(1);
     }
 
-    // Validasi
     if (!username) {
       showToastReport('Masukkan username dulu', 'error');
       input.focus();
@@ -920,14 +976,10 @@
       return;
     }
 
-    // Notif
     showToastReport('Membuka profil di browser...', 'info');
 
-    // Buka web Zepeto
     setTimeout(() => {
       window.open('https://web.zepeto.me/share/user/profile/' + username, '_blank');
-      
-      // Tampilkan popup panduan setelah 800ms
       setTimeout(() => {
         showInstruction();
       }, 800);
