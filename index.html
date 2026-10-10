@@ -16,6 +16,132 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* ================= LOADING SCREEN ================= */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: #0a0a1a;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    transition: opacity 0.8s ease, visibility 0.8s ease;
+  }
+
+  #loader.hide {
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  .loader-logo {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: 6px;
+    background: linear-gradient(90deg, #fff, #b8b0ff, #ff9ce0, #fff);
+    background-size: 300% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientFlow 3s linear infinite, titleGlow 2s ease-in-out infinite;
+  }
+
+  .loader-bar {
+    width: 200px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .loader-bar::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, #6a5cff, #ff5cc8);
+    border-radius: 4px;
+    box-shadow: 0 0 15px rgba(106, 92, 255, 0.8);
+    animation: loadFill 2.2s ease forwards;
+  }
+
+  @keyframes loadFill {
+    0%   { width: 0%; }
+    100% { width: 100%; }
+  }
+
+  .loader-text {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    animation: pulseText 1.5s ease-in-out infinite;
+  }
+
+  @keyframes pulseText {
+    0%, 100% { opacity: 0.4; }
+    50%      { opacity: 1; }
+  }
+
+  /* ================= WELCOME NOTIF ================= */
+  #welcome {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-120%);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 16px;
+    padding: 14px 22px;
+    z-index: 9998;
+    box-shadow: 0 10px 40px rgba(106, 92, 255, 0.5);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: transform 0.6s cubic-bezier(.2,.8,.2,1);
+    pointer-events: none;
+    max-width: 90%;
+  }
+
+  #welcome.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  #welcome .dot {
+    width: 8px;
+    height: 8px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 10px #4ade80;
+    animation: dotPulse 1.5s ease infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes dotPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%      { transform: scale(1.4); opacity: 0.6; }
+  }
+
+  #welcome .msg {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    color: #fff;
+  }
+
+  #welcome .msg span {
+    background: linear-gradient(90deg, #b8b0ff, #ff9ce0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+  }
+
   /* BACKGROUND BERGERAK */
   body::before {
     content: "";
@@ -98,13 +224,31 @@
     100% { background-position: 300% 50%; }
   }
 
+  /* TYPING EFFECT SUBTITLE */
   .header p {
     font-size: 10px;
-    color: rgba(255, 255, 255, 0.5);
+    color: rgba(255, 255, 255, 0.6);
     letter-spacing: 3px;
     margin-top: 8px;
     text-transform: uppercase;
-    animation: fadeIn 1.2s ease 0.3s backwards;
+    display: inline-block;
+    overflow: hidden;
+    white-space: nowrap;
+    border-right: 2px solid rgba(255, 255, 255, 0.7);
+    animation:
+      typing 2s steps(12) 2.4s backwards,
+      blink 0.8s step-end 2.4s infinite;
+    width: 0;
+  }
+
+  @keyframes typing {
+    from { width: 0; }
+    to   { width: 100%; }
+  }
+
+  @keyframes blink {
+    0%, 100% { border-color: rgba(255, 255, 255, 0.7); }
+    50%      { border-color: transparent; }
   }
 
   /* HERO GIF */
@@ -159,11 +303,6 @@
     to   { opacity: 1; transform: translateY(0); }
   }
 
-  @keyframes fadeIn {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-  }
-
   /* KARTU AVATAR */
   .card {
     position: relative;
@@ -193,7 +332,6 @@
     pointer-events: none;
   }
 
-  /* SHINE EFFECT - kilau menyapu */
   .card::after {
     content: "";
     position: absolute;
@@ -207,9 +345,7 @@
     z-index: 2;
   }
 
-  .card:hover::after {
-    left: 100%;
-  }
+  .card:hover::after { left: 100%; }
 
   .card img {
     width: 100%;
@@ -221,9 +357,7 @@
     transition: transform 0.5s;
   }
 
-  .card:hover img {
-    transform: scale(1.06);
-  }
+  .card:hover img { transform: scale(1.06); }
 
   .card:hover {
     transform: translateY(-6px) scale(1.02);
@@ -293,13 +427,9 @@
     transition: left 0.6s;
   }
 
-  .btn-zepeto:hover::before {
-    left: 100%;
-  }
+  .btn-zepeto:hover::before { left: 100%; }
 
-  .btn-zepeto:active {
-    transform: scale(0.95);
-  }
+  .btn-zepeto:active { transform: scale(0.95); }
 
   @media (hover: hover) {
     .btn-zepeto:hover {
@@ -316,9 +446,7 @@
     transition: transform 0.3s;
   }
 
-  .btn-zepeto:hover svg {
-    transform: translateX(4px);
-  }
+  .btn-zepeto:hover svg { transform: translateX(4px); }
 
   /* FOOTER */
   .footer {
@@ -327,7 +455,6 @@
     font-size: 10px;
     color: rgba(255, 255, 255, 0.35);
     letter-spacing: 3px;
-    animation: fadeIn 1.5s ease 1s backwards;
   }
 
   @media (max-width: 360px) {
@@ -339,6 +466,19 @@
 </style>
 </head>
 <body>
+
+<!-- ============ LOADING SCREEN ============ -->
+<div id="loader">
+  <div class="loader-logo">XBERTRON</div>
+  <div class="loader-bar"></div>
+  <div class="loader-text">Memuat GENIX AREA...</div>
+</div>
+
+<!-- ============ WELCOME NOTIF ============ -->
+<div id="welcome">
+  <div class="dot"></div>
+  <div class="msg">Selamat datang di <span>GENIX AREA</span></div>
+</div>
 
 <!-- PARTIKEL BINTANG -->
 <div class="stars" id="stars"></div>
@@ -421,7 +561,7 @@
     }, 800);
   }
 
-  // Bikin partikel bintang otomatis
+  // Partikel bintang
   const starsContainer = document.getElementById('stars');
   for (let i = 0; i < 30; i++) {
     const star = document.createElement('div');
@@ -432,6 +572,25 @@
     star.style.width = star.style.height = (Math.random() * 2 + 1) + 'px';
     starsContainer.appendChild(star);
   }
+
+  // Loading screen hilang setelah 2.5 detik
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.getElementById('loader').classList.add('hide');
+
+      // Welcome notif muncul setelah loader hilang
+      setTimeout(() => {
+        const welcome = document.getElementById('welcome');
+        welcome.classList.add('show');
+
+        // Hilang otomatis setelah 3.5 detik
+        setTimeout(() => {
+          welcome.classList.remove('show');
+        }, 3500);
+
+      }, 400);
+    }, 2500);
+  });
 </script>
 
 </body>
