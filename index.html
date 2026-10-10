@@ -764,10 +764,10 @@
         type="text" 
         id="reportUser" 
         class="report-input" 
-        placeholder="contoh: player123"
+        placeholder="contoh: kiara.nara"
         autocomplete="off"
       >
-      <div class="report-hint">Masukkan username tanpa @ atau link</div>
+      <div class="report-hint">Bisa ketik username atau paste link Zepeto</div>
 
       <button class="btn-report" onclick="openReport()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -796,7 +796,7 @@
 
       setTimeout(() => {
         if (Date.now() - waktu < 2000 && !document.hidden) {
-          window.location.href = "https://zepeto.me/" + kode;
+          window.location.href = "https://web.zepeto.me/share/user/profile/" + kode;
         } else {
           setTimeout(() => redirect.classList.remove('show'), 3000);
         }
@@ -810,14 +810,19 @@
     const input = document.getElementById('reportUser');
     let username = input.value.trim();
 
+    // Kalau paste link lengkap, ambil username-nya
+    if (username.includes('/profile/')) {
+      username = username.split('/profile/').pop().split('/')[0].split('?')[0];
+    } else if (username.includes('zepeto.me/')) {
+      username = username.split('zepeto.me/').pop().split('/')[0].split('?')[0];
+    }
+
+    // Hapus @
     if (username.startsWith('@')) {
       username = username.slice(1);
     }
 
-    if (username.includes('zepeto.me/')) {
-      username = username.split('zepeto.me/').pop().split('/')[0].split('?')[0];
-    }
-
+    // Validasi
     if (!username) {
       showToastReport('Masukkan username dulu', 'error');
       input.focus();
@@ -830,11 +835,28 @@
       return;
     }
 
+    // Tampilkan loading
     showToastReport('Membuka profil ' + username + '...', 'info');
 
+    const redirect = document.getElementById('redirect');
+    redirect.classList.add('show');
+
     setTimeout(() => {
-      window.open('https://zepeto.me/' + username, '_blank');
-    }, 600);
+      const waktu = Date.now();
+      // Coba buka APP dulu
+      window.location.href = "zepeto://zepeto.me/" + username;
+
+      // Fallback ke WEB
+      setTimeout(() => {
+        if (Date.now() - waktu < 2000 && !document.hidden) {
+          window.open('https://web.zepeto.me/share/user/profile/' + username, '_blank');
+          redirect.classList.remove('show');
+        } else {
+          setTimeout(() => redirect.classList.remove('show'), 3000);
+        }
+      }, 1500);
+
+    }, 800);
   }
 
   let reportToastTimer;
@@ -887,4 +909,4 @@
 </script>
 
 </body>
- </html>
+       </html>
