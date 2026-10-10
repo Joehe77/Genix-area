@@ -167,6 +167,107 @@
     font-weight: 800;
   }
 
+  /* ========== POPUP PETUNJUK ========== */
+  .instruction-popup {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    z-index: 10001;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s, visibility 0.4s;
+  }
+  .instruction-popup.show {
+    opacity: 1;
+    visibility: visible;
+  }
+  .instruction-card {
+    background: linear-gradient(180deg, rgba(30, 30, 50, 0.95), rgba(15, 15, 30, 0.98));
+    border: 1px solid rgba(140, 120, 255, 0.5);
+    border-radius: 24px;
+    padding: 28px 24px;
+    max-width: 340px;
+    width: 100%;
+    text-align: center;
+    box-shadow:
+      0 20px 60px rgba(106, 92, 255, 0.5),
+      0 0 0 1px rgba(140, 120, 255, 0.3),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    animation: cardPopup 0.5s cubic-bezier(.2,.8,.2,1);
+  }
+  @keyframes cardPopup {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  .instruction-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    color: #6a5cff;
+    filter: drop-shadow(0 0 20px rgba(106, 92, 255, 0.8));
+    animation: iconPulse 2s ease-in-out infinite;
+  }
+  @keyframes iconPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+  .instruction-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+  .instruction-title {
+    font-size: 14px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    background: linear-gradient(90deg, #b8b0ff, #ff9ce0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .instruction-text {
+    font-size: 12px;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+  }
+  .instruction-text strong {
+    color: #b8b0ff;
+    font-weight: 800;
+    background: rgba(106, 92, 255, 0.15);
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+  .instruction-close {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    background: linear-gradient(135deg, #6a5cff 0%, #ff5cc8 100%);
+    background-size: 200% 200%;
+    color: #fff;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(106, 92, 255, 0.4);
+    animation: btnGradient 4s ease infinite;
+    transition: transform 0.2s;
+  }
+  .instruction-close:active {
+    transform: scale(0.97);
+  }
+
   /* ========== BACKGROUND ========== */
   body::before {
     content: "";
@@ -466,12 +567,10 @@
       inset 0 1px 0 rgba(255, 255, 255, 0.15);
     animation: fadeInUp 0.7s ease 1s backwards;
   }
-
   .report-header {
     text-align: center;
     margin-bottom: 16px;
   }
-
   .report-icon {
     width: 36px;
     height: 36px;
@@ -480,12 +579,10 @@
     animation: reportPulse 2s ease-in-out infinite;
     margin-bottom: 8px;
   }
-
   @keyframes reportPulse {
     0%,100% { transform: scale(1); filter: drop-shadow(0 0 12px rgba(255,92,92,0.7)); }
     50% { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(255,92,92,1)); }
   }
-
   .report-title {
     font-size: 14px;
     font-weight: 800;
@@ -494,7 +591,6 @@
     text-transform: uppercase;
     text-shadow: 0 0 15px rgba(255, 92, 92, 0.6);
   }
-
   .report-sub {
     font-size: 9px;
     letter-spacing: 2px;
@@ -502,13 +598,11 @@
     text-transform: uppercase;
     margin-top: 4px;
   }
-
   .report-form {
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
-
   .report-label {
     font-size: 10px;
     letter-spacing: 2px;
@@ -517,7 +611,6 @@
     font-weight: 700;
     margin-left: 4px;
   }
-
   .report-input {
     width: 100%;
     padding: 14px 16px;
@@ -532,18 +625,15 @@
     outline: none;
     transition: border-color 0.3s, box-shadow 0.3s, background 0.3s;
   }
-
   .report-input::placeholder {
     color: rgba(255, 255, 255, 0.3);
     font-weight: 400;
   }
-
   .report-input:focus {
     border-color: rgba(255, 92, 92, 0.7);
     background: rgba(0, 0, 0, 0.5);
     box-shadow: 0 0 0 3px rgba(255, 92, 92, 0.15), 0 0 20px rgba(255, 92, 92, 0.3);
   }
-
   .report-hint {
     font-size: 9px;
     color: rgba(255, 255, 255, 0.35);
@@ -551,7 +641,6 @@
     margin-left: 4px;
     margin-top: -2px;
   }
-
   .btn-report {
     display: flex;
     align-items: center;
@@ -577,23 +666,19 @@
     transition: transform 0.2s, box-shadow 0.2s;
     animation: btnReportFlow 4s ease infinite;
   }
-
   @keyframes btnReportFlow {
     0%,100% { background-position: 0% 50%; }
     50% { background-position: 100% 50%; }
   }
-
   .btn-report:hover {
     transform: translateY(-2px);
     box-shadow:
       0 12px 28px rgba(255, 92, 92, 0.6),
       inset 0 1px 0 rgba(255, 255, 255, 0.4);
   }
-
   .btn-report:active {
     transform: scale(0.97);
   }
-
   .btn-report svg {
     width: 16px;
     height: 16px;
@@ -835,28 +920,54 @@
       return;
     }
 
-    // Tampilkan loading
-    showToastReport('Membuka profil ' + username + '...', 'info');
+    // Notif
+    showToastReport('Membuka profil di browser...', 'info');
 
-    const redirect = document.getElementById('redirect');
-    redirect.classList.add('show');
-
+    // Buka web Zepeto
     setTimeout(() => {
-      const waktu = Date.now();
-      // Coba buka APP dulu
-      window.location.href = "zepeto://zepeto.me/" + username;
-
-      // Fallback ke WEB
+      window.open('https://web.zepeto.me/share/user/profile/' + username, '_blank');
+      
+      // Tampilkan popup panduan setelah 800ms
       setTimeout(() => {
-        if (Date.now() - waktu < 2000 && !document.hidden) {
-          window.open('https://web.zepeto.me/share/user/profile/' + username, '_blank');
-          redirect.classList.remove('show');
-        } else {
-          setTimeout(() => redirect.classList.remove('show'), 3000);
-        }
-      }, 1500);
+        showInstruction();
+      }, 800);
+    }, 600);
+  }
 
-    }, 800);
+  // ========== POPUP PETUNJUK ==========
+  function showInstruction() {
+    let popup = document.getElementById('instructionPopup');
+    if (!popup) {
+      popup = document.createElement('div');
+      popup.id = 'instructionPopup';
+      popup.className = 'instruction-popup';
+      popup.innerHTML = `
+        <div class="instruction-card">
+          <div class="instruction-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+          </div>
+          <div class="instruction-title">PROFIL TERBUKA</div>
+          <div class="instruction-text">
+            Untuk masuk ke app Zepeto,<br>
+            tap tombol <strong>"BUKA APLIKASI"</strong><br>
+            di halaman yang baru terbuka.
+          </div>
+          <button class="instruction-close" onclick="closeInstruction()">
+            MENGERTI
+          </button>
+        </div>
+      `;
+      document.body.appendChild(popup);
+    }
+    requestAnimationFrame(() => popup.classList.add('show'));
+  }
+
+  function closeInstruction() {
+    const popup = document.getElementById('instructionPopup');
+    if (popup) popup.classList.remove('show');
   }
 
   let reportToastTimer;
@@ -909,4 +1020,4 @@
 </script>
 
 </body>
-       </html>
+ </html>
